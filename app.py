@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 import os
 from tensorflow import keras
-from tensorflow.keras import layers
 
 # ==================== CONFIG ====================
 
@@ -18,79 +17,16 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # ==================== CLASSIFIER ====================
 
-IMG_SIZE = (256, 256)
-
-def build_model(num_classes=2):
-    """Rebuild the exact architecture used in training."""
-    model = keras.Sequential([
-        layers.InputLayer(input_shape=(*IMG_SIZE, 3)),
-        layers.Rescaling(1./255),
-
-        # Block 1
-        layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
-        layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
-        layers.BatchNormalization(),
-        layers.MaxPooling2D((2, 2)),
-        layers.Dropout(0.25),
-
-        # Block 2
-        layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
-        layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
-        layers.BatchNormalization(),
-        layers.MaxPooling2D((2, 2)),
-        layers.Dropout(0.25),
-
-        # Block 3
-        layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
-        layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
-        layers.BatchNormalization(),
-        layers.MaxPooling2D((2, 2)),
-        layers.Dropout(0.25),
-
-        # Block 4
-        layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
-        layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
-        layers.BatchNormalization(),
-        layers.MaxPooling2D((2, 2)),
-        layers.Dropout(0.25),
-
-        layers.GlobalAveragePooling2D(),
-
-        layers.Dense(512, activation='relu'),
-        layers.BatchNormalization(),
-        layers.Dropout(0.5),
-
-        layers.Dense(256, activation='relu'),
-        layers.BatchNormalization(),
-        layers.Dropout(0.4),
-
-        layers.Dense(128, activation='relu'),
-        layers.BatchNormalization(),
-        layers.Dropout(0.3),
-
-        layers.Dense(num_classes, activation='softmax')
-    ])
-    return model
-
-
 class IronWaterClassifier:
     def __init__(self, object_type, model_path):
         self.object_type = object_type
 
         try:
-            # Try full model load first (works if saved with model.save())
             self.model = keras.models.load_model(model_path)
-            print(f"✅ Model loaded (full): {object_type}")
-        except Exception as e1:
-            print(f"⚠️  Full load failed for {object_type}: {e1}")
-            try:
-                # Fallback: rebuild architecture then load weights only
-                self.model = build_model(num_classes=2)
-                self.model.load_weights(model_path)
-                print(f"✅ Model loaded (weights): {object_type}")
-            except Exception as e2:
-                print(f"❌ Failed load {object_type}: {e2}")
-                self.model = None
+            print(f"✅ Model loaded: {object_type}")
+        except Exception as e:
+            print(f"❌ Failed load {object_type}: {e}")
+            self.model = None
 
         if object_type == 'orange':
             self.class_names = ['orange_clean', 'orange_iron_contaminated']
@@ -115,8 +51,7 @@ class IronWaterClassifier:
         lab = cv2.merge([l, a, b])
         img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
 
-        # NOTE: Do NOT divide by 255 here — the model's Rescaling layer handles it.
-        return np.array(img, dtype=np.float32)
+        return np.array(img, dtype=np.float32) / 255.0
 
     def classify(self, img):
         if self.model is None:
