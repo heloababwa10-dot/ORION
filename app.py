@@ -133,41 +133,47 @@ def load_keras2_model(keras_path):
         layer_names = [l.name for l in model.layers]
         logging.info(f"   Built model layers: {layer_names}")
 
-        # Peek inside H5 to see what layer names are stored
+        # Dump full H5 key structure to understand the format
         import h5py
+        h5_all_keys = []
         h5_layer_names = []
         with h5py.File(tmp_path, 'r') as hf:
+            hf.visit(lambda name: h5_all_keys.append(name))
             def collect_keys(name, obj):
                 if isinstance(obj, h5py.Group) and 'vars' in obj:
                     h5_layer_names.append(name)
             hf.visititems(collect_keys)
-        logging.info(f"   H5 stored layers: {h5_layer_names}")
+        # Show first 10 keys to understand structure
+        logging.info(f"   H5 all keys (first 15): {h5_all_keys[:15]}")
+        logging.info(f"   H5 vars groups: {h5_layer_names[:5]}")
 
-        missing = [n for n in layer_names if not any(n in h for h in h5_layer_names)]
-        if missing:
-            logging.info(f"   ⚠️  Layers with no H5 match (weights NOT loaded): {missing}")
-
-        # Load ALL weights (trainable + non-trainable like BN moving stats)
-        # model.load_weights by_name skips non-trainable weights — use h5py directly
+        # Load ALL weights (trainable + non-trainable like BN moving_mean/variance)
+        # The .keras H5 uses flat keys like 'layers\\conv2d\\vars\\0'
+        # model.load_weights(by_name) silently skips non-trainable weights — use h5py directly
         import h5py
+        loaded_count = 0
+        skipped_count = 0
         with h5py.File(tmp_path, 'r') as hf:
-            layers_group = hf['layers']
-            loaded_count = 0
-            skipped_count = 0
             for layer in model.layers:
-                if layer.name not in layers_group:
+                all_weights = layer.weights  # trainable + non-trainable
+                if not all_weights:
                     continue
-                layer_group = layers_group[layer.name]
-                if 'vars' not in layer_group:
-                    continue
-                vars_group = layer_group['vars']
-                all_weights = layer.weights  # includes non-trainable
                 for i, w in enumerate(all_weights):
-                    key = str(i)
-                    if key in vars_group:
-                        w.assign(vars_group[key][:])
-                        loaded_count += 1
-                    else:
+                    # Try both path styles: flat backslash key and nested group
+                    flat_key  = f'layers\\{layer.name}\\vars\\{i}'
+                    nested_path = ['layers', layer.name, 'vars', str(i)]
+                    try:
+                        if flat_key in hf:
+                            w.assign(hf[flat_key][:])
+                            loaded_count += 1
+                        else:
+                            # Walk nested path
+                            node = hf
+                            for part in nested_path:
+                                node = node[part]
+                            w.assign(node[:])
+                            loaded_count += 1
+                    except Exception:
                         skipped_count += 1
 
         total_weights = len(model.weights)
@@ -176,7 +182,7 @@ def load_keras2_model(keras_path):
         logging.info(f"   📊 Weights loaded: {loaded_count}, skipped: {skipped_count}")
         logging.info(f"   📊 Non-zero tensors: {nonzero_weights}/{total_weights}")
         if nonzero_weights < total_weights * 0.8:
-            logging.info(f"   🚨 CRITICAL: <80% weights non-zero — model may be broken!")
+            logging.info(f"   🚨 CRITICAL: <80% weights non-zero — check H5 structure!")
         return model
 
     except Exception as e:
