@@ -15,8 +15,9 @@ let uploadedFiles = []; // Array untuk banyak file
 // Allow multiple file selection
 imageInput.setAttribute('multiple', 'multiple');
 
-// Click to upload multiple files
-uploadBox.addEventListener('click', () => {
+// Click to open file dialog — upload-box is a <div> (not <label>), so we handle it here
+uploadBox.addEventListener('click', (e) => {
+    e.stopPropagation();
     imageInput.click();
 });
 
