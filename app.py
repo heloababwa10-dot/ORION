@@ -4,6 +4,7 @@ import numpy as np
 import os
 import zipfile
 import tempfile
+import base64
 from tensorflow import keras
 from tensorflow.keras import layers
 
@@ -258,6 +259,56 @@ def classify_image():
 
     except Exception as e:
         print("❌ ERROR:", e)
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/classify-camera', methods=['POST'])
+def classify_camera():
+    """
+    Classify an image captured from camera using base64 encoding
+    """
+    try:
+        data = request.get_json()
+        object_type = data.get('object_type')
+        image_data = data.get('image')  # base64 encoded image
+
+        print(f"🎥 Camera classification for: {object_type}")
+
+        if object_type not in classifiers:
+            return jsonify({'error': f"Invalid object type '{object_type}'. Valid: {list(classifiers.keys())}"}), 400
+
+        if classifiers[object_type].model is None:
+            return jsonify({'error': f"Model '{object_type}' failed to load at startup"}), 503
+
+        if not image_data:
+            return jsonify({'error': 'No image data provided'}), 400
+
+        # Decode base64 image
+        try:
+            # Remove the data:image/...;base64, prefix if present
+            if ',' in image_data:
+                image_data = image_data.split(',')[1]
+            
+            img_bytes = base64.b64decode(image_data)
+            nparr = np.frombuffer(img_bytes, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            if img is None:
+                return jsonify({'error': 'Invalid image data'}), 400
+
+            result = classifiers[object_type].classify(img)
+
+            return jsonify({
+                'success': True,
+                'result': result
+            })
+
+        except Exception as e:
+            print(f"❌ Image decode error: {e}")
+            return jsonify({'error': f"Failed to decode image: {str(e)}"}), 400
+
+    except Exception as e:
+        print("❌ CAMERA ERROR:", e)
         return jsonify({'error': str(e)}), 500
 
 
