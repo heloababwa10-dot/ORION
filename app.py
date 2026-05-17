@@ -182,9 +182,10 @@ class IronWaterClassifier:
         lab = cv2.merge([l, a, b])
         img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
 
-        # The model already has Rescaling(1/255) as its first layer,
-        # so we feed raw uint8 values [0, 255] — do NOT divide here.
-        return np.array(img, dtype=np.float32)
+        # Training pipeline: load_image divides by 255 BEFORE the model,
+        # then model's Rescaling(1/255) divides again.
+        # We replicate this: send [0,1] values → model rescales to [0, 1/255].
+        return np.array(img, dtype=np.float32) / 255.0
 
     def classify(self, img):
         if self.model is None:
