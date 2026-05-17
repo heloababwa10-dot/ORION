@@ -147,14 +147,36 @@ def load_keras2_model(keras_path):
         if missing:
             logging.info(f"   ⚠️  Layers with no H5 match (weights NOT loaded): {missing}")
 
-        model.load_weights(tmp_path, by_name=True, skip_mismatch=True)
+        # Load ALL weights (trainable + non-trainable like BN moving stats)
+        # model.load_weights by_name skips non-trainable weights — use h5py directly
+        import h5py
+        with h5py.File(tmp_path, 'r') as hf:
+            layers_group = hf['layers']
+            loaded_count = 0
+            skipped_count = 0
+            for layer in model.layers:
+                if layer.name not in layers_group:
+                    continue
+                layer_group = layers_group[layer.name]
+                if 'vars' not in layer_group:
+                    continue
+                vars_group = layer_group['vars']
+                all_weights = layer.weights  # includes non-trainable
+                for i, w in enumerate(all_weights):
+                    key = str(i)
+                    if key in vars_group:
+                        w.assign(vars_group[key][:])
+                        loaded_count += 1
+                    else:
+                        skipped_count += 1
 
         total_weights = len(model.weights)
         nonzero_weights = sum(1 for w in model.weights if float(tf.reduce_sum(tf.abs(w)).numpy()) > 1e-6)
-        logging.info(f"   ✅ Weight extraction (by_name) succeeded")
-        logging.info(f"   📊 Weights check: {nonzero_weights}/{total_weights} tensors are non-zero")
-        if nonzero_weights < total_weights * 0.5:
-            logging.info(f"   🚨 CRITICAL: <50% weights loaded — model is mostly random!")
+        logging.info(f"   ✅ Weight extraction (h5py direct) succeeded")
+        logging.info(f"   📊 Weights loaded: {loaded_count}, skipped: {skipped_count}")
+        logging.info(f"   📊 Non-zero tensors: {nonzero_weights}/{total_weights}")
+        if nonzero_weights < total_weights * 0.8:
+            logging.info(f"   🚨 CRITICAL: <80% weights non-zero — model may be broken!")
         return model
 
     except Exception as e:
