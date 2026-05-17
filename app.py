@@ -228,20 +228,15 @@ class IronWaterClassifier:
         }
 
     def preprocess(self, img):
+        # Match training pipeline exactly:
+        # 1. decode_jpeg → RGB uint8
+        # 2. resize
+        # 3. divide by 255 → [0, 1]
+        # 4. model's Rescaling(1/255) divides again → [0, 0.0039]
+        # No CLAHE — not used during training.
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (256, 256))
-
-        # CLAHE contrast enhancement (same as training)
-        lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
-        l, a, b = cv2.split(lab)
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-        l = clahe.apply(l)
-        lab = cv2.merge([l, a, b])
-        img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
-
-        # The model already has Rescaling(1/255) as its first layer,
-        # so we feed raw uint8 values [0, 255] — do NOT divide here.
-        return np.array(img, dtype=np.float32)
+        return np.array(img, dtype=np.float32) / 255.0
 
     def classify(self, img):
         if self.model is None:
