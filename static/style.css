@@ -12,6 +12,11 @@ html{
 body{
     background:#f4f1f1;
     color:#1f2937;
+    overflow-x: hidden;
+}
+
+html {
+    overflow-x: hidden;
 }
 
 /* NAVBAR */
@@ -988,7 +993,9 @@ body{
     }
 
     .hero h1 {
-        font-size: 52px;
+        font-size: clamp(32px, 11vw, 52px);
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
     .hero-tag {
