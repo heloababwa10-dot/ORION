@@ -694,3 +694,198 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('📦 DOM Content Loaded, initializing carousel...');
     new ModelsCarousel();
 });
+// ==================== CAMERA ====================
+
+let cameraStream = null;
+let facingMode = 'environment'; // start with rear camera
+
+async function openCamera() {
+    const modal = document.getElementById('cameraModal');
+    modal.classList.add('active');
+    await startStream();
+}
+
+async function startStream() {
+    // Stop any existing stream
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+    }
+
+    setHint('Starting camera...');
+
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode, width: { ideal: 1280 }, height: { ideal: 960 } },
+            audio: false
+        });
+
+        const video = document.getElementById('cameraFeed');
+        video.srcObject = cameraStream;
+        await video.play();
+        setHint('Position the sample inside the frame');
+    } catch (err) {
+        console.error('Camera error:', err);
+        if (err.name === 'NotAllowedError') {
+            setHint('❌ Camera permission denied. Please allow access.');
+        } else if (err.name === 'NotFoundError') {
+            setHint('❌ No camera found on this device.');
+        } else {
+            setHint('❌ Could not start camera: ' + err.message);
+        }
+    }
+}
+
+function closeCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+    }
+    document.getElementById('cameraModal').classList.remove('active');
+    resetCaptureBtn();
+    setHint('Position the sample inside the frame');
+}
+
+async function switchCamera() {
+    facingMode = facingMode === 'environment' ? 'user' : 'environment';
+    await startStream();
+}
+
+async function captureAndClassify() {
+    const video = document.getElementById('cameraFeed');
+    const canvas = document.getElementById('cameraCanvas');
+    const captureBtn = document.getElementById('captureBtn');
+
+    if (!cameraStream || video.readyState < 2) {
+        setHint('⚠️ Camera not ready yet, please wait.');
+        return;
+    }
+
+    // Flash effect
+    const viewfinder = document.querySelector('.camera-viewfinder');
+    const flash = document.createElement('div');
+    flash.className = 'camera-flash';
+    viewfinder.appendChild(flash);
+    setTimeout(() => flash.remove(), 400);
+
+    // Draw frame to canvas
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    // Convert to Blob
+    canvas.toBlob(async (blob) => {
+        if (!blob) {
+            setHint('❌ Failed to capture image.');
+            return;
+        }
+
+        // Get selected model
+        const selectedModel = document.getElementById('modelSelect').value;
+        const modelType = modelMapping[selectedModel];
+        if (!modelType) {
+            setHint('❌ No model selected.');
+            return;
+        }
+
+        // Show scanning state
+        captureBtn.classList.add('scanning');
+        setHint('🔍 Analysing...');
+
+        try {
+            const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+            const result = await classifySingleImage(file, modelType, 1);
+
+            if (result.success) {
+                const pct = (result.confidence * 100).toFixed(1);
+                const icon = result.condition.includes('Clean') ? '✅' : '⚠️';
+                setHint(`${icon} ${result.condition} — ${pct}% confidence`);
+
+                // Also push into the main result panel and close after a moment
+                showCameraResult(result, modelType);
+                setTimeout(() => closeCamera(), 2200);
+            } else {
+                setHint('❌ Error: ' + result.error);
+            }
+        } catch (err) {
+            setHint('❌ Request failed: ' + err.message);
+        } finally {
+            resetCaptureBtn();
+        }
+    }, 'image/jpeg', 0.92);
+}
+
+function setHint(text) {
+    const el = document.getElementById('cameraHint');
+    if (el) el.textContent = text;
+}
+
+function resetCaptureBtn() {
+    const btn = document.getElementById('captureBtn');
+    if (btn) btn.classList.remove('scanning');
+}
+
+function showCameraResult(result, modelType) {
+    const pct = (result.confidence * 100).toFixed(1);
+    const isClean = result.condition.includes('Clean');
+    const icon = isClean ? '✅' : '⚠️';
+
+    // Add to uploadedFiles so the main classify flow also works
+    // (just display the result card directly)
+    const resultCard = document.querySelector('.result-card');
+    if (!resultCard) return;
+
+    resultCard.innerHTML = `
+        <div class="result-top">
+            <div>
+                <p>AI RESULT — CAMERA</p>
+                <h2 id="resultClass">${icon} ${result.condition.toUpperCase()}</h2>
+            </div>
+            <div class="confidence">
+                <span id="confidenceText">${pct}%</span>
+            </div>
+        </div>
+        <div class="bar-group">
+            <div class="bar-label">
+                <span>Confidence</span>
+                <span id="confidenceLabel">${pct}%</span>
+            </div>
+            <div class="bar">
+                <div class="bar-fill" id="confidenceBar" style="width:${pct}%"></div>
+            </div>
+        </div>
+        <div class="summary-box">
+            <h3>Analysis Summary</h3>
+            <p id="summaryText">
+                Model: <strong>${modelType.toUpperCase()}</strong><br>
+                Source: <strong>Camera Capture</strong><br><br>
+                ${isClean
+                    ? '✅ Water appears <strong>clean</strong>. No iron contamination detected in this sample.'
+                    : '⚠️ <strong>Iron contamination detected.</strong> Consider filtering or treatment before use.'}
+            </p>
+        </div>
+        <div class="action-buttons" style="margin-top:20px;">
+            <button class="btn-secondary" onclick="resetClassifier()">↩ Reset</button>
+        </div>
+    `;
+
+    // Scroll to result
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Close modal on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('cameraModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeCamera();
+        });
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('cameraModal')?.classList.contains('active')) {
+        closeCamera();
+    }
+});
