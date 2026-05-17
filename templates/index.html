@@ -1,446 +1,446 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>ORION</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ORION</title>
 
-        <link
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-            rel="stylesheet"
-        />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    />
 
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='style.css') }}"
-        />
-    </head>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    />
+</head>
 
-    <body>
+<body>
 
-        <!-- NAVBAR -->
-        <nav class="navbar">
+    <!-- NAVBAR -->
+    <nav class="navbar">
 
-            <div class="logo-area">
-                <div class="logo-box">O</div>
+        <div class="logo-area">
+            <div class="logo-box">O</div>
 
-                <div>
-                    <h1>ORION</h1>
-                    <p>SMART WATER ANALYSIS</p>
+            <div>
+                <h1>ORION</h1>
+                <p>SMART WATER ANALYSIS</p>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="#home">HOME</a>
+            <a href="#about">ABOUT</a>
+            <a href="#models">MODELS</a>
+            <a href="#classify">UPLOAD</a>
+        </div>
+
+        <button class="nav-btn" onclick="scrollToClassify()">
+            START SCANNING
+        </button>
+
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+
+        <div class="hero-left">
+
+            <p class="hero-tag">
+                Deep Learning Based Detection Platform
+            </p>
+
+            <h1>
+                DETECT<br>
+                WATER<br>
+                CONTAMINATION
+            </h1>
+
+            <p class="hero-desc">
+                ORION is here to help you! Upload your sample images and let ORION analyze the contamination levels with high accuracy.
+            </p>
+
+            <div class="hero-buttons">
+                <button onclick="scrollToClassify()">
+                    TRY NOW
+                </button>
+
+                <button class="outline-btn">
+                    LEARN MORE
+                </button>
+            </div>
+
+        </div>
+
+        <div class="hero-right">
+
+            <div class="status-card">
+
+                <div class="status-header">
+                    <div>
+                        <p>SYSTEM STATUS</p>
+                        <h2>ORION ACTIVE</h2>
+                    </div>
+
+                    <div class="green-dot"></div>
                 </div>
+
+                <div class="model-box">
+                    <div class="model-row">
+                        <span>Banana Model</span>
+                        <span>95%</span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="fill1"></div>
+                    </div>
+                </div>
+
+                <div class="model-box">
+                    <div class="model-row">
+                        <span>Orange Model</span>
+                        <span>97%</span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="fill2"></div>
+                    </div>
+                </div>
+
+                <div class="model-box">
+                    <div class="model-row">
+                        <span>Egg Model</span>
+                        <span>80%</span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="fill3"></div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="nav-links">
-                <a href="#home">HOME</a>
-                <a href="#about">ABOUT</a>
-                <a href="#models">MODELS</a>
-                <a href="#classify">UPLOAD</a>
-            </div>
+        </div>
 
-            <button class="nav-btn" onclick="scrollToClassify()">
-                START SCANNING
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+
+        <div class="about-left">
+
+            <p class="section-tag">ABOUT US</p>
+
+            <h2>
+                Smart Detection
+                For Cleaner Water
+            </h2>
+
+            <p>
+                We have developed an AI platform to detect
+                water contamination using visual analysis based on
+                Deep Learning.
+            </p>
+
+            <button onclick="scrollToClassify()">
+                EXPLORE AI SYSTEM
             </button>
 
-        </nav>
+        </div>
 
-        <!-- HERO -->
-        <section class="hero" id="home">
+        <div class="about-grid">
 
-            <div class="hero-left">
+            <div class="feature-card">
+                <div class="emoji">🧠</div>
 
-                <p class="hero-tag">
-                    Deep Learning Based Detection Platform
-                </p>
-
-                <h1>
-                    DETECT<br>
-                    WATER<br>
-                    CONTAMINATION
-                </h1>
-
-                <p class="hero-desc">
-                    ORION is here to help you! Upload your sample images and let ORION analyze the contamination levels with high accuracy.
-                </p>
-
-                <div class="hero-buttons">
-                    <button onclick="scrollToClassify()">
-                        TRY NOW
-                    </button>
-
-                    <button class="outline-btn">
-                        LEARN MORE
-                    </button>
-                </div>
-
-            </div>
-
-            <div class="hero-right">
-
-                <div class="status-card">
-
-                    <div class="status-header">
-                        <div>
-                            <p>SYSTEM STATUS</p>
-                            <h2>ORION ACTIVE</h2>
-                        </div>
-
-                        <div class="green-dot"></div>
-                    </div>
-
-                    <div class="model-box">
-                        <div class="model-row">
-                            <span>Banana Model</span>
-                            <span>95%</span>
-                        </div>
-
-                        <div class="progress">
-                            <div class="fill1"></div>
-                        </div>
-                    </div>
-
-                    <div class="model-box">
-                        <div class="model-row">
-                            <span>Orange Model</span>
-                            <span>97%</span>
-                        </div>
-
-                        <div class="progress">
-                            <div class="fill2"></div>
-                        </div>
-                    </div>
-
-                    <div class="model-box">
-                        <div class="model-row">
-                            <span>Egg Model</span>
-                            <span>80%</span>
-                        </div>
-
-                        <div class="progress">
-                            <div class="fill3"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- ABOUT -->
-        <section class="about" id="about">
-
-            <div class="about-left">
-
-                <p class="section-tag">ABOUT US</p>
-
-                <h2>
-                    Smart Detection
-                    For Cleaner Water
-                </h2>
+                <h3>Deep Learning</h3>
 
                 <p>
-                    We have developed an AI platform to detect
-                    water contamination using visual analysis based on
-                    Deep Learning.
+                    CNN model for contamination detection.
                 </p>
+            </div>
 
-                <button onclick="scrollToClassify()">
-                    EXPLORE AI SYSTEM
+            <div class="feature-card dark-card">
+                <div class="emoji">⚡</div>
+
+                <h3>Realtime Scan</h3>
+
+                <p>
+                    Fast and accurate predictions.
+                </p>
+            </div>
+
+            <div class="feature-card silver-card">
+                <div class="emoji">🔬</div>
+
+                <h3>Multi Models</h3>
+
+                <p>
+                    Dedicated AI for every object.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="emoji">📊</div>
+
+                <h3>High Accuracy</h3>
+
+                <p>
+                    Optimized preprocessing system.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- MODELS SECTION -->
+    <section class="models" id="models">
+        <p class="section-tag">AI MODELS</p>
+        <h2>Our Detection Models</h2>
+
+        <div class="models-carousel">
+            <div class="carousel-wrapper">
+                <!-- Left Side Models -->
+                <div class="side-models">
+                    <div class="side-model-item" data-index="0">
+                        <div class="side-model-emoji">🍌</div>
+                        <div class="side-model-title">Banana Model</div>
+                    </div>
+                    <div class="side-model-item" data-index="2">
+                        <div class="side-model-emoji">🍊</div>
+                        <div class="side-model-title">Orange Model</div>
+                    </div>
+                    <div class="side-model-item" data-index="1">
+                        <div class="side-model-emoji">🥚</div>
+                        <div class="side-model-title">Egg Model</div>
+                    </div>
+                </div>
+
+                <!-- Center Focused Card -->
+                <div class="focused-card-wrapper">
+                    <div class="focused-card">
+                        <span class="center-emoji" id="center-emoji">🥚</span>
+                        <h3 id="center-title">Egg Classifier</h3>
+                        <p id="center-description">Optimized AI for egg contamination analysis.</p>
+
+                        <div class="model-images">
+                            <img src="photos/ec.jpg" alt="Egg visualization 1" class="model-img">
+                            <img src="photos/ei.jpg" alt="Egg visualization 2" class="model-img">
+                            <img src="photos/er.jpg" alt="Egg visualization 3" class="model-img">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Models -->
+                <div class="side-models">
+                    <div class="side-model-item" data-index="0">
+                        <div class="side-model-emoji">🍌</div>
+                        <div class="side-model-title">Banana Model</div>
+                    </div>
+                    <div class="side-model-item" data-index="2">
+                        <div class="side-model-emoji">🍊</div>
+                        <div class="side-model-title">Orange Model</div>
+                    </div>
+                    <div class="side-model-item" data-index="1">
+                        <div class="side-model-emoji">🥚</div>
+                        <div class="side-model-title">Egg Model</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Dots -->
+            <div class="carousel-dots">
+                <span class="dot" data-index="0"></span>
+                <span class="dot active" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLASSIFY -->
+    <section class="classify" id="classify">
+
+        <div class="classify-header">
+
+            <p class="section-tag">AI CLASSIFICATION</p>
+
+            <h2>Upload And Analyze</h2>
+
+            <p>
+                Upload gambar dan biarkan AI mendeteksi kualitas air.
+            </p>
+
+        </div>
+
+        <div class="classify-grid">
+
+            <!-- LEFT -->
+            <div class="upload-card">
+
+                <h3>Upload Image</h3>
+
+                <select id="modelSelect">
+
+                    <option value="model1">
+                        🍌 Banana Model
+                    </option>
+
+                    <option value="model2">
+                        🥚 Egg Model
+                    </option>
+
+                    <option value="model3">
+                        🍊 Orange Model
+                    </option>
+
+                </select>
+
+                <div class="upload-box">
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        hidden
+                    />
+
+                    <div class="upload-icon">
+                        ⬆
+                    </div>
+
+                    <h4>
+                        Drag &amp; Drop Image
+                    </h4>
+
+                    <p>
+                        Click to upload image
+                    </p>
+
+                </div>
+
+                <button class="camera-btn" onclick="openCamera()">
+                    📷 USE CAMERA
+                </button>
+
+                <img
+                    id="previewImage"
+                    class="preview-image"
+                />
+
+                <button onclick="classifyImage()">
+                    CLASSIFY IMAGE
                 </button>
 
             </div>
 
-            <div class="about-grid">
+            <!-- RIGHT -->
+            <div class="result-card">
 
-                <div class="feature-card">
-                    <div class="emoji">🧠</div>
+                <div class="result-top">
 
-                    <h3>Deep Learning</h3>
+                    <div>
 
-                    <p>
-                        CNN model for contamination detection.
+                        <p>AI RESULT</p>
+
+                        <h2 id="resultClass">
+                            READY
+                        </h2>
+
+                    </div>
+
+                    <div class="confidence">
+                        <span id="confidenceText">
+                            0%
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="bar-group">
+
+                    <div class="bar-label">
+                        <span>Confidence</span>
+                        <span id="confidenceLabel">
+                            0%
+                        </span>
+                    </div>
+
+                    <div class="bar">
+                        <div
+                            class="bar-fill"
+                            id="confidenceBar"
+                        ></div>
+                    </div>
+
+                </div>
+
+                <div class="summary-box">
+
+                    <h3>
+                        Analysis Summary
+                    </h3>
+
+                    <p id="summaryText">
+                        Waiting for image...
                     </p>
-                </div>
-
-                <div class="feature-card dark-card">
-                    <div class="emoji">⚡</div>
-
-                    <h3>Realtime Scan</h3>
-
-                    <p>
-                        Fast and accurate predictions.
-                    </p>
-                </div>
-
-                <div class="feature-card silver-card">
-                    <div class="emoji">🔬</div>
-
-                    <h3>Multi Models</h3>
-
-                    <p>
-                        Dedicated AI for every object.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="emoji">📊</div>
-
-                    <h3>High Accuracy</h3>
-
-                    <p>
-                        Optimized preprocessing system.
-                    </p>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- MODELS SECTION -->
-        <section class="models" id="models">
-            <p class="section-tag">AI MODELS</p>
-            <h2>Our Detection Models</h2>
-
-            <div class="models-carousel">
-                <div class="carousel-wrapper">
-                    <!-- Left Side Models -->
-                    <div class="side-models">
-                        <div class="side-model-item" data-index="0">
-                            <div class="side-model-emoji">🍌</div>
-                            <div class="side-model-title">Banana Model</div>
-                        </div>
-                        <div class="side-model-item" data-index="2">
-                            <div class="side-model-emoji">🍊</div>
-                            <div class="side-model-title">Orange Model</div>
-                        </div>
-                        <div class="side-model-item" data-index="1">
-                            <div class="side-model-emoji">🥚</div>
-                            <div class="side-model-title">Egg Model</div>
-                        </div>
-                    </div>
-
-                    <!-- Center Focused Card -->
-                    <div class="focused-card-wrapper">
-                        <div class="focused-card">
-                            <span class="center-emoji" id="center-emoji">🥚</span>
-                            <h3 id="center-title">Egg Classifier</h3>
-                            <p id="center-description">Optimized AI for egg contamination analysis.</p>
-
-                            <div class="model-images">
-                                <img src="photos/ec.jpg" alt="Egg visualization 1" class="model-img">
-                                <img src="photos/ei.jpg" alt="Egg visualization 2" class="model-img">
-                                <img src="photos/er.jpg" alt="Egg visualization 3" class="model-img">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Side Models -->
-                    <div class="side-models">
-                        <div class="side-model-item" data-index="0">
-                            <div class="side-model-emoji">🍌</div>
-                            <div class="side-model-title">Banana Model</div>
-                        </div>
-                        <div class="side-model-item" data-index="2">
-                            <div class="side-model-emoji">🍊</div>
-                            <div class="side-model-title">Orange Model</div>
-                        </div>
-                        <div class="side-model-item" data-index="1">
-                            <div class="side-model-emoji">🥚</div>
-                            <div class="side-model-title">Egg Model</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation Dots -->
-                <div class="carousel-dots">
-                    <span class="dot" data-index="0"></span>
-                    <span class="dot active" data-index="1"></span>
-                    <span class="dot" data-index="2"></span>
-                </div>
-            </div>
-        </section>
-
-        <!-- CLASSIFY -->
-        <section class="classify" id="classify">
-
-            <div class="classify-header">
-
-                <p class="section-tag">AI CLASSIFICATION</p>
-
-                <h2>Upload And Analyze</h2>
-
-                <p>
-                    Upload gambar dan biarkan AI mendeteksi kualitas air.
-                </p>
-
-            </div>
-
-            <div class="classify-grid">
-
-                <!-- LEFT -->
-                <div class="upload-card">
-
-                    <h3>Upload Image</h3>
-
-                    <select id="modelSelect">
-
-                        <option value="model1">
-                            🍌 Banana Model
-                        </option>
-
-                        <option value="model2">
-                            🥚 Egg Model
-                        </option>
-
-                        <option value="model3">
-                            🍊 Orange Model
-                        </option>
-
-                    </select>
-
-                    <label class="upload-box">
-
-                        <input
-                            type="file"
-                            id="imageInput"
-                            accept="image/*"
-                            hidden
-                        />
-
-                        <div class="upload-icon">
-                            ⬆
-                        </div>
-
-                        <h4>
-                            Drag & Drop Image
-                        </h4>
-
-                        <p>
-                            Click to upload image
-                        </p>
-
-                    </label>
-
-                    <button class="camera-btn" onclick="openCamera()">
-                        📷 USE CAMERA
-                    </button>
-
-                    <img
-                        id="previewImage"
-                        class="preview-image"
-                    />
-
-                    <button onclick="classifyImage()">
-                        CLASSIFY IMAGE
-                    </button>
-
-                </div>
-
-                <!-- RIGHT -->
-                <div class="result-card">
-
-                    <div class="result-top">
-
-                        <div>
-
-                            <p>AI RESULT</p>
-
-                            <h2 id="resultClass">
-                                READY
-                            </h2>
-
-                        </div>
-
-                        <div class="confidence">
-                            <span id="confidenceText">
-                                0%
-                            </span>
-                        </div>
-
-                    </div>
-
-                    <div class="bar-group">
-
-                        <div class="bar-label">
-                            <span>Confidence</span>
-                            <span id="confidenceLabel">
-                                0%
-                            </span>
-                        </div>
-
-                        <div class="bar">
-                            <div
-                                class="bar-fill"
-                                id="confidenceBar"
-                            ></div>
-                        </div>
-
-                    </div>
-
-                    <div class="summary-box">
-
-                        <h3>
-                            Analysis Summary
-                        </h3>
-
-                        <p id="summaryText">
-                            Waiting for image...
-                        </p>
-
-                    </div>
 
                 </div>
 
             </div>
 
-        </section>
-
-        <!-- FOOTER -->
-        <footer>
-
-            <h2>ORION AI</h2>
-
-            <p>
-                AI-powered water contamination detection platform.
-            </p>
-
-        </footer>
-
-        <!-- CAMERA MODAL -->
-        <div id="cameraModal" class="camera-modal">
-            <div class="camera-modal-inner">
-
-                <div class="camera-modal-header">
-                    <h3>📷 Camera Scan</h3>
-                    <button class="camera-close-btn" onclick="closeCamera()">✕</button>
-                </div>
-
-                <div class="camera-viewfinder">
-                    <video id="cameraFeed" autoplay playsinline></video>
-                    <div class="viewfinder-overlay">
-                        <div class="viewfinder-corner tl"></div>
-                        <div class="viewfinder-corner tr"></div>
-                        <div class="viewfinder-corner bl"></div>
-                        <div class="viewfinder-corner br"></div>
-                    </div>
-                    <canvas id="cameraCanvas" style="display:none;"></canvas>
-                </div>
-
-                <p class="camera-hint" id="cameraHint">Position the sample inside the frame</p>
-
-                <div class="camera-controls">
-                    <button class="camera-switch-btn" onclick="switchCamera()" title="Switch camera">🔄</button>
-                    <button class="camera-capture-btn" onclick="captureAndClassify()" id="captureBtn">
-                        <span class="capture-ring"></span>
-                    </button>
-                    <div style="width:56px;"></div>
-                </div>
-
-            </div>
         </div>
 
-        <!-- Single script tag at end of body -->
-        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </section>
 
-    </body>
-    </html>
+    <!-- FOOTER -->
+    <footer>
+
+        <h2>ORION AI</h2>
+
+        <p>
+            AI-powered water contamination detection platform.
+        </p>
+
+    </footer>
+
+    <!-- CAMERA MODAL -->
+    <div id="cameraModal" class="camera-modal">
+        <div class="camera-modal-inner">
+
+            <div class="camera-modal-header">
+                <h3>📷 Camera Scan</h3>
+                <button class="camera-close-btn" onclick="closeCamera()">✕</button>
+            </div>
+
+            <div class="camera-viewfinder">
+                <video id="cameraFeed" autoplay playsinline></video>
+                <div class="viewfinder-overlay">
+                    <div class="viewfinder-corner tl"></div>
+                    <div class="viewfinder-corner tr"></div>
+                    <div class="viewfinder-corner bl"></div>
+                    <div class="viewfinder-corner br"></div>
+                </div>
+                <canvas id="cameraCanvas" style="display:none;"></canvas>
+            </div>
+
+            <p class="camera-hint" id="cameraHint">Position the sample inside the frame</p>
+
+            <div class="camera-controls">
+                <button class="camera-switch-btn" onclick="switchCamera()" title="Switch camera">🔄</button>
+                <button class="camera-capture-btn" onclick="captureAndClassify()" id="captureBtn">
+                    <span class="capture-ring"></span>
+                </button>
+                <div style="width:56px;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Single script tag at end of body -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
