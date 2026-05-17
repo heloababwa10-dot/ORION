@@ -949,6 +949,87 @@ body{
 
 /* Responsive */
 @media (max-width: 768px) {
+
+    /* NAVBAR */
+    .navbar {
+        padding: 14px 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .nav-links {
+        display: none; /* hide text links on mobile */
+    }
+
+    .nav-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+
+    .logo-area h1 {
+        font-size: 18px;
+    }
+
+    .logo-area p {
+        font-size: 9px;
+    }
+
+    .logo-box {
+        width: 38px;
+        height: 38px;
+        font-size: 20px;
+    }
+
+    /* HERO */
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 100px 24px 60px;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 52px;
+    }
+
+    .hero-tag {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    .hero-desc {
+        font-size: 16px;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-buttons button {
+        padding: 14px 26px;
+        font-size: 14px;
+    }
+
+    .hero-right {
+        margin-top: 40px;
+    }
+
+    .status-card {
+        padding: 28px 24px;
+    }
+
+    /* ABOUT */
+    .about {
+        grid-template-columns: 1fr;
+        padding: 60px 24px;
+        gap: 40px;
+    }
+
+    .about-left h2 {
+        font-size: 36px;
+    }
+
+    /* MODELS */
     .models {
         padding: 60px 20px;
     }
@@ -996,8 +1077,25 @@ body{
         height: 100px;
     }
 
+    /* CLASSIFY */
+    .classify {
+        padding: 60px 24px;
+    }
+
+    .classify-header h2 {
+        font-size: 36px;
+    }
+
     .classify-grid {
         grid-template-columns: 1fr;
+    }
+
+    .upload-card h3 {
+        font-size: 28px;
+    }
+
+    .upload-box {
+        height: 200px;
     }
 
     .summary-stats {
@@ -1010,6 +1108,11 @@ body{
 
     .action-buttons {
         flex-direction: column;
+    }
+
+    /* FOOTER */
+    footer {
+        padding: 40px 24px;
     }
 }
 
@@ -1048,4 +1151,220 @@ footer{
     padding:60px;
 
     text-align:center;
+}
+/* ==================== CAMERA BUTTON ==================== */
+
+.camera-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 16px;
+    border: 2px dashed rgba(255,255,255,0.5);
+    border-radius: 20px;
+    background: transparent;
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+.camera-btn:hover {
+    border-color: white;
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+}
+
+/* ==================== CAMERA MODAL ==================== */
+
+.camera-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-modal.active {
+    display: flex;
+}
+
+.camera-modal-inner {
+    background: linear-gradient(160deg, #2a0a10, #3b0710);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 32px;
+    padding: 36px;
+    width: 90%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+}
+
+.camera-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.camera-modal-header h3 {
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.camera-close-btn {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.camera-close-btn:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+/* Viewfinder */
+.camera-viewfinder {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #000;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#cameraFeed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.viewfinder-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.viewfinder-corner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-color: white;
+    border-style: solid;
+    opacity: 0.85;
+}
+
+.viewfinder-corner.tl { top: 16px;    left: 16px;  border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+.viewfinder-corner.tr { top: 16px;    right: 16px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+.viewfinder-corner.bl { bottom: 16px; left: 16px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+.viewfinder-corner.br { bottom: 16px; right: 16px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+/* Hint text */
+.camera-hint {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    min-height: 20px;
+}
+
+/* Controls row */
+.camera-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+/* Switch camera */
+.camera-switch-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-switch-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Capture shutter button */
+.camera-capture-btn {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid rgba(255,255,255,0.4);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.15);
+}
+
+.camera-capture-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 10px rgba(255,255,255,0.2);
+}
+
+.camera-capture-btn:active {
+    transform: scale(0.94);
+}
+
+.capture-ring {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 3px solid #5b0b17;
+    display: block;
+}
+
+.camera-capture-btn.scanning {
+    background: #fbbf24;
+    animation: pulse-scan 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse-scan {
+    0%, 100% { box-shadow: 0 0 0 6px rgba(251,191,36,0.2); }
+    50%       { box-shadow: 0 0 0 14px rgba(251,191,36,0.05); }
+}
+
+/* Flash effect on capture */
+.camera-flash {
+    position: absolute;
+    inset: 0;
+    background: white;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    animation: flash 0.35s ease-out forwards;
+}
+
+@keyframes flash {
+    0%   { opacity: 0.9; }
+    100% { opacity: 0; }
 }
