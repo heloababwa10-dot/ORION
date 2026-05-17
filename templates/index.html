@@ -196,71 +196,94 @@
 
     </section>
 
-<!-- MODELS SECTION -->
-<section class="models" id="models">
-    <p class="section-tag">AI MODELS</p>
-    <h2>Our Detection Models</h2>
+    <!-- MODELS SECTION -->
+    <section class="models" id="models">
+        <p class="section-tag">AI MODELS</p>
+        <h2>Our Detection Models</h2>
 
-    <div class="models-carousel">
-        <!-- Carousel -->
-        <div class="carousel-wrapper">
-            <!-- Left Side Models -->
-            <div class="side-models">
-                <div class="side-model-item" data-index="0">
-                    <div class="side-model-emoji">🍌</div>
-                    <div class="side-model-title">Banana Model</div>
+        <div class="models-carousel">
+            <!-- Carousel -->
+            <div class="carousel-wrapper">
+                <!-- Left Side Models -->
+                <div class="side-models">
+                    <div class="side-model-item" data-index="0">
+                        <div class="side-model-emoji">🍌</div>
+                        <div class="side-model-title">Banana Expert</div>
+                    </div>
+                    <div class="side-model-item" data-index="2">
+                        <div class="side-model-emoji">🍊</div>
+                        <div class="side-model-title">Orange Pro</div>
+                    </div>
                 </div>
-                <div class="side-model-item" data-index="2">
-                    <div class="side-model-emoji">🍊</div>
-                    <div class="side-model-title">Orange Model</div>
-                </div>
-                <div class="side-model-item" data-index="1">
-                    <div class="side-model-emoji">🥚</div>
-                    <div class="side-model-title">Egg Model</div>
-                </div>
-            </div>
 
-            <!-- Center Focused Card -->
-            <div class="focused-card-wrapper">
-                <div class="focused-card">
-                    <span class="center-emoji" id="center-emoji">🥚</span>
-                    <h3 id="center-title">Egg Classifier</h3>
-                    <p id="center-description">Optimized AI for egg contamination analysis.</p>
-                    
-                    <!-- Model Images -->
-                    <div class="model-images">
-                        <img src="photos/ec.jpg" alt="Egg visualization 1" class="model-img">
-                        <img src="photos/ei.jpg" alt="Egg visualization 2" class="model-img">
-                        <img src="photos/er.jpg" alt="Egg visualization 3" class="model-img">
+                <!-- Center Focused Card -->
+                <div class="focused-card-wrapper">
+                    <div class="focused-card" id="focused-card">
+                        <span class="center-emoji" id="center-emoji">🥚</span>
+                        <h3 id="center-title">Egg Classifier</h3>
+                        <p id="center-description">Optimized AI for egg contamination analysis.</p>
+                        
+                        <!-- Model Images -->
+                        <div class="model-images">
+                            <img src="photos/ec.jpg" alt="Egg visualization 1" class="model-img">
+                            <img src="photos/ei.jpg" alt="Egg visualization 2" class="model-img">
+                            <img src="photos/er.jpg" alt="Egg visualization 3" class="model-img">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Models -->
+                <div class="side-models">
+                    <div class="side-model-item" data-index="0">
+                        <div class="side-model-emoji">🍌</div>
+                        <div class="side-model-title">Banana Expert</div>
+                    </div>
+                    <div class="side-model-item" data-index="2">
+                        <div class="side-model-emoji">🍊</div>
+                        <div class="side-model-title">Orange Pro</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Side Models -->
-            <div class="side-models">
-                <div class="side-model-item" data-index="0">
-                    <div class="side-model-emoji">🍌</div>
-                    <div class="side-model-title">Banana Model</div>
+            <!-- Navigation Dots -->
+            <div class="carousel-dots">
+                <span class="dot" data-index="0"></span>
+                <span class="dot active" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAMERA MODAL -->
+    <div id="camera-modal" class="camera-modal" style="display: none;">
+        <div class="camera-modal-content">
+            <div class="camera-header">
+                <h2>📷 Camera Capture</h2>
+                <button class="camera-close-btn" id="camera-close-btn">&times;</button>
+            </div>
+            
+            <div class="camera-body">
+                <div class="camera-container">
+                    <video id="camera-video" autoplay playsinline></video>
+                    <canvas id="camera-canvas" style="display: none;"></canvas>
                 </div>
-                <div class="side-model-item" data-index="2">
-                    <div class="side-model-emoji">🍊</div>
-                    <div class="side-model-title">Orange Model</div>
+                
+                <div class="camera-controls">
+                    <button id="camera-capture-btn" class="btn-capture">📸 Capture</button>
+                    <button id="camera-classify-btn" class="btn-classify" style="display: none;">✅ Classify</button>
                 </div>
-                <div class="side-model-item" data-index="1">
-                    <div class="side-model-emoji">🥚</div>
-                    <div class="side-model-title">Egg Model</div>
+            </div>
+
+            <div id="camera-result" class="camera-result" style="display: none;">
+                <div class="result-box">
+                    <h3>Classification Result</h3>
+                    <p id="result-condition"></p>
+                    <p id="result-confidence"></p>
+                    <button id="camera-new-capture-btn" class="btn-new-capture">📸 New Capture</button>
                 </div>
             </div>
         </div>
-
-        <!-- Navigation Dots -->
-        <div class="carousel-dots">
-            <span class="dot" data-index="0"></span>
-            <span class="dot active" data-index="1"></span>
-            <span class="dot" data-index="2"></span>
-        </div>
     </div>
-</section>
 
     <!-- CLASSIFY -->
     <section class="classify" id="classify">
