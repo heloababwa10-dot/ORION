@@ -4,7 +4,17 @@ import numpy as np
 import os
 import zipfile
 import tempfile
+import logging
+import tensorflow as tf
 from tensorflow import keras
+
+os.environ['PYTHONUNBUFFERED'] = '1'
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(message)s',
+    handlers=[logging.StreamHandler()]
+)
 from tensorflow.keras import layers
 import tensorflow.keras.backend as K
 
@@ -96,10 +106,10 @@ def load_keras2_model(keras_path):
     # ── Strategy 1: standard load (works when TF versions match) ──────────
     try:
         model = keras.models.load_model(keras_path)
-        print(f"   ✅ Standard load succeeded")
+        logging.info(f"   ✅ Standard load succeeded")
         return model
     except Exception as e:
-        print(f"   ⚠️  Standard load failed, using weight extraction...")
+        logging.info(f"   ⚠️  Standard load failed, using weight extraction...")
 
     # ── Extract model.weights.h5 from the ZIP ─────────────────────────────
     with zipfile.ZipFile(keras_path, 'r') as z:
@@ -119,16 +129,36 @@ def load_keras2_model(keras_path):
         model = build_fresh_model(num_classes=2)
         model.build(input_shape=(None, *IMG_SIZE, 3))
 
-        # Verify layer names match what's in the H5 before loading
+        # Print built model layer names
         layer_names = [l.name for l in model.layers]
-        print(f"   Layer names: {layer_names[:5]}...")
+        logging.info(f"   Built model layers: {layer_names}")
 
-        model.load_weights(tmp_path, by_name=True, skip_mismatch=False)
-        print(f"   ✅ Weight extraction (by_name) succeeded")
+        # Peek inside H5 to see what layer names are stored
+        import h5py
+        h5_layer_names = []
+        with h5py.File(tmp_path, 'r') as hf:
+            def collect_keys(name, obj):
+                if isinstance(obj, h5py.Group) and 'vars' in obj:
+                    h5_layer_names.append(name)
+            hf.visititems(collect_keys)
+        logging.info(f"   H5 stored layers: {h5_layer_names}")
+
+        missing = [n for n in layer_names if not any(n in h for h in h5_layer_names)]
+        if missing:
+            logging.info(f"   ⚠️  Layers with no H5 match (weights NOT loaded): {missing}")
+
+        model.load_weights(tmp_path, by_name=True, skip_mismatch=True)
+
+        total_weights = len(model.weights)
+        nonzero_weights = sum(1 for w in model.weights if float(tf.reduce_sum(tf.abs(w)).numpy()) > 1e-6)
+        logging.info(f"   ✅ Weight extraction (by_name) succeeded")
+        logging.info(f"   📊 Weights check: {nonzero_weights}/{total_weights} tensors are non-zero")
+        if nonzero_weights < total_weights * 0.5:
+            logging.info(f"   🚨 CRITICAL: <50% weights loaded — model is mostly random!")
         return model
 
     except Exception as e:
-        print(f"   ⚠️  by_name load failed ({e}), trying positional load...")
+        logging.info(f"   ⚠️  by_name load failed ({e}), trying positional load...")
 
         # ── Strategy 3: reset counter again → positional load ─────────────
         try:
@@ -136,7 +166,7 @@ def load_keras2_model(keras_path):
             model = build_fresh_model(num_classes=2)
             model.build(input_shape=(None, *IMG_SIZE, 3))
             model.load_weights(tmp_path)
-            print(f"   ✅ Positional weight load succeeded")
+            logging.info(f"   ✅ Positional weight load succeeded")
             return model
         except Exception as e2:
             raise RuntimeError(f"All strategies failed. Last error: {e2}")
@@ -150,12 +180,12 @@ class IronWaterClassifier:
     def __init__(self, object_type, model_path):
         self.object_type = object_type
 
-        print(f"\n🔄 Loading: {object_type}")
+        logging.info(f"\n🔄 Loading: {object_type}")
         try:
             self.model = load_keras2_model(model_path)
-            print(f"✅ Ready: {object_type}")
+            logging.info(f"✅ Ready: {object_type}")
         except Exception as e:
-            print(f"❌ Failed: {object_type} — {e}")
+            logging.info(f"❌ Failed: {object_type} — {e}")
             self.model = None
 
         if object_type == 'orange':
@@ -182,10 +212,9 @@ class IronWaterClassifier:
         lab = cv2.merge([l, a, b])
         img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
 
-        # Training pipeline: load_image divides by 255 BEFORE the model,
-        # then model's Rescaling(1/255) divides again.
-        # We replicate this: send [0,1] values → model rescales to [0, 1/255].
-        return np.array(img, dtype=np.float32) / 255.0
+        # The model already has Rescaling(1/255) as its first layer,
+        # so we feed raw uint8 values [0, 255] — do NOT divide here.
+        return np.array(img, dtype=np.float32)
 
     def classify(self, img):
         if self.model is None:
@@ -195,7 +224,7 @@ class IronWaterClassifier:
         batch = np.expand_dims(preprocessed, axis=0)
 
         pred = self.model.predict(batch, verbose=0)[0]
-        print(f"   Raw predictions [{self.object_type}]: {pred}")  # debug — remove later
+        logging.info(f"   Raw predictions [{self.object_type}]: {pred}")
 
         idx = int(np.argmax(pred))
         confidence = float(pred[idx])
@@ -226,15 +255,15 @@ def load_models():
         if os.path.exists(path):
             classifiers[obj] = IronWaterClassifier(obj, path)
         else:
-            print(f"⚠️  Not found: {path}")
+            logging.info(f"⚠️  Not found: {path}")
 
     loaded = [k for k, v in classifiers.items() if v.model is not None]
     failed = [k for k, v in classifiers.items() if v.model is None]
-    print(f"\n{'='*50}")
-    print(f"✅ Loaded: {loaded}")
+    logging.info(f"\n{'='*50}")
+    logging.info(f"✅ Loaded: {loaded}")
     if failed:
-        print(f"❌ Failed: {failed}")
-    print(f"{'='*50}\n")
+        logging.info(f"❌ Failed: {failed}")
+    logging.info(f"{'='*50}\n")
 
 
 # ==================== ROUTES ====================
@@ -280,18 +309,18 @@ def classify_image():
 
     except Exception as e:
         import traceback
-        print("❌ ERROR:", traceback.format_exc())
+        logging.info("❌ ERROR: %s", traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 
 # ==================== MAIN ====================
 
 if __name__ == '__main__':
-    print("=" * 50)
-    print("🚀 STARTING ORION")
-    print("=" * 50)
+    logging.info("=" * 50)
+    logging.info("🚀 STARTING ORION")
+    logging.info("=" * 50)
 
     load_models()
 
-    print("🌐 Open: http://localhost:8080")
+    logging.info("🌐 Open: http://localhost:8080")
     app.run(host='0.0.0.0', port=8080, debug=False)
