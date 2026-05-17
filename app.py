@@ -171,9 +171,6 @@ class IronWaterClassifier:
         }
 
     def preprocess(self, img):
-        print(f"   [DEBUG] Raw image shape: {img.shape}, dtype: {img.dtype}, "
-              f"min: {img.min()}, max: {img.max()}, mean: {img.mean():.2f}")
-
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (256, 256))
 
@@ -185,14 +182,9 @@ class IronWaterClassifier:
         lab = cv2.merge([l, a, b])
         img = cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
 
-        print(f"   [DEBUG] After CLAHE shape: {img.shape}, mean: {img.mean():.2f}")
-
-        # Training pipeline: load_image divides by 255 BEFORE the model,
-        # then model's Rescaling(1/255) divides again.
-        # We replicate this: send [0,1] values → model rescales to [0, 1/255].
-        result = np.array(img, dtype=np.float32) / 255.0
-        print(f"   [DEBUG] Final tensor min: {result.min():.4f}, max: {result.max():.4f}, mean: {result.mean():.4f}")
-        return result
+        # The model already has Rescaling(1/255) as its first layer,
+        # so we feed raw uint8 values [0, 255] — do NOT divide here.
+        return np.array(img, dtype=np.float32)
 
     def classify(self, img):
         if self.model is None:
@@ -281,10 +273,6 @@ def classify_image():
 
         if img is None:
             return jsonify({'error': 'Could not decode image — unsupported format?'}), 400
-
-        print(f"   [ROUTE] Image decoded: shape={img.shape}, dtype={img.dtype}, "
-              f"bytes_received={len(img_bytes)}, "
-              f"mean_BGR=({img[:,:,0].mean():.1f}, {img[:,:,1].mean():.1f}, {img[:,:,2].mean():.1f})")
 
         result = classifiers[object_type].classify(img)
         return jsonify({'success': True, 'result': result})
