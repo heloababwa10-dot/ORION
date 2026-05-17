@@ -148,8 +148,8 @@ def load_keras2_model(keras_path):
         logging.info(f"   H5 vars groups: {h5_layer_names[:5]}")
 
         # Load ALL weights (trainable + non-trainable like BN moving_mean/variance)
-        # The .keras H5 uses flat keys like 'layers\\conv2d\\vars\\0'
-        # model.load_weights(by_name) silently skips non-trainable weights — use h5py directly
+        # H5 structure: group key = 'layers\\layer_name' (backslash)
+        #               data path  = 'vars/0' (forward slash inside group)
         import h5py
         loaded_count = 0
         skipped_count = 0
@@ -158,22 +158,21 @@ def load_keras2_model(keras_path):
                 all_weights = layer.weights  # trainable + non-trainable
                 if not all_weights:
                     continue
+                group_key = f'layers\\{layer.name}'
+                if group_key not in hf:
+                    skipped_count += len(all_weights)
+                    continue
+                layer_group = hf[group_key]
+                if 'vars' not in layer_group:
+                    skipped_count += len(all_weights)
+                    continue
+                vars_group = layer_group['vars']
                 for i, w in enumerate(all_weights):
-                    # Try both path styles: flat backslash key and nested group
-                    flat_key  = f'layers\\{layer.name}\\vars\\{i}'
-                    nested_path = ['layers', layer.name, 'vars', str(i)]
-                    try:
-                        if flat_key in hf:
-                            w.assign(hf[flat_key][:])
-                            loaded_count += 1
-                        else:
-                            # Walk nested path
-                            node = hf
-                            for part in nested_path:
-                                node = node[part]
-                            w.assign(node[:])
-                            loaded_count += 1
-                    except Exception:
+                    key = str(i)
+                    if key in vars_group:
+                        w.assign(vars_group[key][:])
+                        loaded_count += 1
+                    else:
                         skipped_count += 1
 
         total_weights = len(model.weights)
