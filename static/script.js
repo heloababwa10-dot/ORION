@@ -742,7 +742,6 @@ function closeCamera() {
         cameraStream = null;
     }
     document.getElementById('cameraModal').classList.remove('active');
-    resetCaptureBtn();
     setHint('Position the sample inside the frame');
 }
 
@@ -751,10 +750,9 @@ async function switchCamera() {
     await startStream();
 }
 
-async function captureAndClassify() {
+function captureAndClassify() {
     const video = document.getElementById('cameraFeed');
     const canvas = document.getElementById('cameraCanvas');
-    const captureBtn = document.getElementById('captureBtn');
 
     if (!cameraStream || video.readyState < 2) {
         setHint('⚠️ Camera not ready yet, please wait.');
@@ -773,45 +771,36 @@ async function captureAndClassify() {
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
 
-    // Convert to Blob
-    canvas.toBlob(async (blob) => {
+    // Convert to Blob and save to uploadedFiles — no classify yet
+    canvas.toBlob((blob) => {
         if (!blob) {
             setHint('❌ Failed to capture image.');
             return;
         }
 
-        // Get selected model
-        const selectedModel = document.getElementById('modelSelect').value;
-        const modelType = modelMapping[selectedModel];
-        if (!modelType) {
-            setHint('❌ No model selected.');
-            return;
-        }
+        const fileName = `camera-capture-${Date.now()}.jpg`;
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
 
-        // Show scanning state
-        captureBtn.classList.add('scanning');
-        setHint('🔍 Analysing...');
+        // Add to the uploadedFiles array
+        uploadedFiles.push(file);
 
-        try {
-            const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
-            const result = await classifySingleImage(file, modelType, 1);
+        // Show/update the preview gallery
+        const galleryDiv = document.getElementById('previewGallery') || createPreviewGallery();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `
+                <img src="${e.target.result}" alt="Capture ${uploadedFiles.length}">
+                <span class="preview-count">${uploadedFiles.length}</span>
+            `;
+            galleryDiv.appendChild(item);
+            galleryDiv.style.display = 'grid';
+        };
+        reader.readAsDataURL(file);
 
-            if (result.success) {
-                const pct = (result.confidence * 100).toFixed(1);
-                const icon = result.condition.includes('Clean') ? '✅' : '⚠️';
-                setHint(`${icon} ${result.condition} — ${pct}% confidence`);
-
-                // Also push into the main result panel and close after a moment
-                showCameraResult(result, modelType);
-                setTimeout(() => closeCamera(), 2200);
-            } else {
-                setHint('❌ Error: ' + result.error);
-            }
-        } catch (err) {
-            setHint('❌ Request failed: ' + err.message);
-        } finally {
-            resetCaptureBtn();
-        }
+        setHint(`✅ Photo saved (${uploadedFiles.length} total). Capture more or close to classify.`);
+        console.log(`📸 Camera photo added. Total: ${uploadedFiles.length}`);
     }, 'image/jpeg', 0.92);
 }
 
