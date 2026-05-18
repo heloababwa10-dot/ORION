@@ -580,19 +580,19 @@ const modelsData = [
         emoji: '🍌',
         title: 'Banana Expert',
         description: 'Specialized CNN model for banana classification.',
-        images: ['photos/bc.jpg', 'photos/bi.jpg', 'photos/br.jpg']
+        images: ['/photos/bc.jpg', '/photos/bi.jpg', '/photos/br.jpg']
     },
     {
         emoji: '🥚',
         title: 'Egg Classifier',
         description: 'Optimized AI for egg contamination analysis.',
-        images: ['photos/ec.jpg', 'photos/ei.jpg', 'photos/er.jpg']
+        images: ['/photos/ec.jpg', '/photos/ei.jpg', '/photos/er.jpg']
     },
     {
         emoji: '🍊',
         title: 'Orange Pro',
         description: 'Advanced classification system for oranges.',
-        images: ['photos/oc.jpg', 'photos/oi.jpg', 'photos/or.jpg']
+        images: ['/photos/oc.jpg', '/photos/oi.jpg', '/photos/or.jpg']
     }
 ];
 
