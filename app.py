@@ -290,6 +290,13 @@ def load_models():
 
 # ==================== ROUTES ====================
 
+@app.route('/photos/<path:filename>')
+def photos(filename):
+    from flask import send_from_directory
+    photos_folder = os.path.join(BASE_DIR, 'photos')
+    return send_from_directory(photos_folder, filename)
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
